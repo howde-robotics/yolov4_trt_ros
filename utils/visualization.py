@@ -93,7 +93,7 @@ class BBoxVisualization():
         for bb, cf, cl in zip(boxes, confs, clss):
             cl = int(cl)
             x_min, y_min, x_max, y_max = bb[0], bb[1], bb[2], bb[3]
-            color = self.colors[cl]
+            color = self.colors[0]
             cv2.rectangle(img, (x_min, y_min), (x_max, y_max), color, 2)
             txt_loc = (max(x_min+2, 0), max(y_min+2, 0))
             cls_name = self.cls_dict.get(cl, 'CLS{}'.format(cl))

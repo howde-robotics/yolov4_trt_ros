@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 import os
 import time
@@ -52,20 +52,23 @@ class yolov4(object):
         
         rospack = rospkg.RosPack()
         package_path = rospack.get_path("yolov4_trt_ros")
-        self.video_topic = rospy.get_param("/video_topic", "/video_source/raw")
-        self.model = rospy.get_param("/model", "yolov4Custom")
+        my_name = rospy.get_name()
+        self.video_topic = rospy.get_param(my_name + "/video_topic", "/camera/color/image_raw")
+        self.model = rospy.get_param(my_name + "/model", "yolov4-tiny-416")
         self.model_path = rospy.get_param(
             "/model_path", package_path + "/yolo/")
-        self.category_num = rospy.get_param("/category_number", 10)
-        self.input_shape = rospy.get_param("/input_shape", "416")
-        self.conf_th = rospy.get_param("/confidence_threshold", 0.5)
-        self.show_img = rospy.get_param("/show_image", True)
+        self.category_num = rospy.get_param(my_name + "/category_number", 80)
+        self.input_shape = rospy.get_param(my_name + "/input_shape", "416")
+        self.conf_th = rospy.get_param(my_name + "/confidence_threshold", 0.5)
+        detect_out_topic = rospy.get_param(my_name + "/detect_out_topic", "detections")
+        overlay_out_topic = rospy.get_param(my_name + "/overlay_out_topic", "/results/overlay")
+        self.show_img = rospy.get_param(my_name + "/show_image", True)
         self.image_sub = rospy.Subscriber(
             self.video_topic, Image, self.img_callback, queue_size=1, buff_size=1920*1080*3)
         self.detection_pub = rospy.Publisher(
-            "detections", Detector2DArray, queue_size=1)
+            detect_out_topic, Detector2DArray, queue_size=1)
         self.overlay_pub = rospy.Publisher(
-            "/result/overlay", Image, queue_size=1)
+            overlay_out_topic, Image, queue_size=1)
 
     def init_yolo(self):
         """ Initialises yolo parameters required for trt engine """
@@ -73,7 +76,9 @@ class yolov4(object):
         if self.model.find('-') == -1:
             self.model = self.model + "-" + self.input_shape
             
-        yolo_dim = self.model.split('-')[-1]
+        # yolo_dim = self.model.split('-')[-1]
+
+        yolo_dim = '416'
 
         if 'x' in yolo_dim:
             dim_split = yolo_dim.split('x')
@@ -136,12 +141,12 @@ class yolov4(object):
         detection2d = Detector2DArray()
         detection = Detector2D()
         detection2d.header.stamp = rospy.Time.now()
-	detection2d.header.frame_id = "camera" # change accordingly
+        detection2d.header.frame_id = "camera" # change accordingly
         
         for i in range(len(boxes)):
             # boxes : xmin, ymin, xmax, ymax
             for _ in boxes:
-		detection.header.stamp = rospy.Time.now()
+                detection.header.stamp = rospy.Time.now()
                 detection.header.frame_id = "camera" # change accordingly
                 detection.results.id = clss[i]
                 detection.results.score = confs[i]
@@ -159,8 +164,8 @@ class yolov4(object):
 
 
 def main():
-    yolo = yolov4()
     rospy.init_node('yolov4_trt_ros', anonymous=True)
+    yolo = yolov4()
     try:
         rospy.spin()
     except KeyboardInterrupt:

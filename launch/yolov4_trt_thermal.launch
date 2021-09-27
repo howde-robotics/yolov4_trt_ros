@@ -1,0 +1,14 @@
+<launch>
+	<!-- yolov4_trt_node -->
+	<node pkg="yolov4_trt_ros" type="trt_yolo_v4.py" name="yolov4_trt_node_thermal" output="screen">		
+		<param name="video_topic" type="string" value="/seek_camera/displayImage" />
+		<param name="model" type="string" value="yolov4-tiny-416" />	
+		<param name="model_path" type="string" value="$(find yolov4_trt_ros)/yolo/" />
+		<param name="input_shape" type="string" value="416" />
+		<param name="category_number" type="int" value="80" />
+		<param name="confidence_threshold" type="double" value="0.5" />
+		<param name="show_image" type="bool" value="True" />
+                <param name="detect_out_topic" type="string" value="/detections/thermal" />
+                <param name="overlay_out_topic" type="string" value="/detections_overlay/thermal" />
+	</node>
+</launch>
