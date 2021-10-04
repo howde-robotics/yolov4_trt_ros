@@ -24,13 +24,14 @@ from cv_bridge import CvBridge, CvBridgeError
 class yolov4(object):
     def __init__(self):
         """ Constructor """
-
+        self.trt_yolo_ready = False
         self.bridge = CvBridge()
         self.init_params()
         self.init_yolo()
         self.cuda_ctx = cuda.Device(0).make_context()
         self.trt_yolo = TrtYOLO(
             (self.model_path + self.model), (self.h, self.w), self.category_num)
+        self.trt_yolo_ready = True
 
     def __del__(self):
         """ Destructor """
@@ -96,7 +97,8 @@ class yolov4(object):
 
     def img_callback(self, ros_img):
         """Continuously capture images from camera and do object detection """
-
+        if not self.trt_yolo_ready:
+            return
         tic = time.time()
 
         # converts from ros_img to cv_img for processing
