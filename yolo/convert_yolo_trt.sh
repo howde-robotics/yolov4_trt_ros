@@ -1,6 +1,21 @@
 echo "What is your model name (Should have XXX.weights and XXX.cfg in this folder)?"
 read model_prefix
 
+SUB1='yolov4'
+if [[ "$model_prefix" == *"$SUB1"* ]]; then
+  echo "Found ${SUB1} in model name, good"
+else
+  echo "Model name required to have substring ${SUB1}, rename file and try again"
+  exit 1
+fi
+
+SUB2='tiny'
+if [[ "$model_prefix" == *"$SUB2"* ]]; then
+  echo "Found ${SUB2} in model name, good"
+else
+  echo "Model name required to have substring ${SUB2}, rename file and try again"
+  exit 1
+fi
 
 echo "What is the input shape? Input 288 or 416 or 608 (probably 416)"
 read input_shape
