@@ -30,7 +30,7 @@ class yolov4(object):
         self.init_yolo()
         self.cuda_ctx = cuda.Device(0).make_context()
         self.trt_yolo = TrtYOLO(
-            (self.model_path + self.model), (self.h, self.w), self.category_num)
+            (os.path.join(self.model_path, self.model)), (self.h, self.w), self.category_num)
         self.trt_yolo_ready = True
 
     def __del__(self):
@@ -56,8 +56,7 @@ class yolov4(object):
         my_name = rospy.get_name()
         self.video_topic = rospy.get_param(my_name + "/video_topic", "/camera/color/image_raw")
         self.model = rospy.get_param(my_name + "/model", "yolov4-tiny-416")
-        self.model_path = rospy.get_param(
-            "/model_path", package_path + "/yolo/")
+        self.model_path = rospy.get_param(my_name + "/model_path", package_path + "/yolo/")
         self.category_num = rospy.get_param(my_name + "/category_number", 80)
         self.input_shape = rospy.get_param(my_name + "/input_shape", "416")
         self.conf_th = rospy.get_param(my_name + "/confidence_threshold", 0.5)
