@@ -1,14 +1,20 @@
 <launch>
+	<arg name="show_image" default="False"/>
+	<arg name="training_name" default="thermal_custom_and_others_not_flir_0"/>
+	<arg name="confidence_threshold" default="0.5"/>
+
 	<!-- yolov4_trt_node -->
 	<node pkg="yolov4_trt_ros" type="trt_yolo_v4.py" name="yolov4_trt_node_thermal" output="screen">		
 		<param name="video_topic" type="string" value="/seek_camera/displayImage" />
 		<param name="model" type="string" value="yolov4-tiny-thermal-416" />	
-		<param name="model_path" type="string" value="$(find yolov4_trt_ros)/yolo/thermal_weights" />
+		<param name="model_path" type="string" value="$(find yolov4_trt_ros)/yolo/$(arg training_name)" />
 		<param name="input_shape" type="string" value="416" />
 		<param name="category_number" type="int" value="1" />
-		<param name="confidence_threshold" type="double" value="0.5" />
-		<param name="show_image" type="bool" value="False" />
+		<param name="confidence_threshold" type="double" value="$(arg confidence_threshold)" />
+		<param name="show_image" type="bool" value="$(arg show_image)" />
                 <param name="detect_out_topic" type="string" value="/detections/thermal" />
                 <param name="overlay_out_topic" type="string" value="/detections_overlay/thermal" />
 	</node>
+
+	<node name="republish_thermal" type="republish" pkg="image_transport" output="screen" args="raw in:=/detections_overlay/thermal compressed out:=/detections_overlay/thermal" />
 </launch>

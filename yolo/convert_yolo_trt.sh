@@ -42,4 +42,4 @@ echo "Now converting to .trt"
 # convert from onnx to trt
 python3 onnx_to_tensorrt.py -m $model_name -c $category_num --verbose
 
-echo "Conversion from yolo to trt done!"
+echo "Conversion from yolo to trt maybe done, check for errors above!"
