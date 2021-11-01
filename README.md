@@ -1,3 +1,24 @@
+# Getting Weights from Drive to Dragoon
+
+Sup nerd, heres a quick how-to: get a new set of weights into the dragoon system (as of Nov 1)
+
+1. Sign into google drive, go to MRSD project > 9_Colab_Notebooks > saved_weights adn find the folder of the approriate run you want to downlaod
+2. Download the `.cfg` and the appropriate `.weights` file. `_last.weights` and `_final.weights` should the be equivalent and are the final weights during training. `_best.weights` are the weights that performed the best on the validation set during training. If you didn't overtrain, there should be too much of a difference here. If you have a reasonable validation set, `_best.weights` is probably the right choice.
+3. Place the `.cfg` and `.weights` file in `dragoon_system/src/perception/yolov4_trt_ros/yolo`
+4. Rename both to `yolov4-tiny-{thermal/rgb}.{cfg/weights}`. Use your noggin to figure out the correct permutation here.
+5. Go to this folder in terminal and run `convert_yolo_trt.sh` 
+6. Enter the name `yolov4-tiny-{thermal/rgb}` when prompted
+7. Enter `416` for size when prompted
+8. Enter `1` for number of categories when prompted
+9. Wait
+10. Check for errors in the final few lines of the output. If there isn't anything bad there, check the folder: you should find 4 NEW files named `yolov4-tiny-{thermal/rgb}-416.[weights, cfg, onnx, trt]`
+11. Make a new folder in `yolov4_trt_ros/yolo` with the same name as the folder in google drive that you got the weights from. This will help keep track of which networks we are using
+12. Move all 6 (yes 6) files into this new folder
+13. To run with these new weights, change the `training_name` parameter of the launch file in `dragoon_bringup/launch/include/yolov4_trt_{thermal/rgb}.launch`. NOTE: Not the launch file in yolov4_trt_ros/launch, which is not used during our primary bootup 
+
+
+
+
 # YOLOv4 with TensorRT engine
 
 This package contains the yolov4_trt_node that performs the inference using NVIDIA's TensorRT engine
